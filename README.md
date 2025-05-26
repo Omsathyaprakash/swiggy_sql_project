@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS restaurants;
 DROP TABLE IF EXISTS riders;
 ```
 
-##2. Creating Tables
+## 2. Creating Tables
 ```sql
 CREATE TABLE restaurants (
     restaurant_id SERIAL PRIMARY KEY,
