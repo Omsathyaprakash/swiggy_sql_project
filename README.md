@@ -86,3 +86,16 @@ SET total_amount = COALESCE(total_amount, 0);
 ## Business Problems Solved
 
 ### 1. Write a query to find the top 5 most frequently ordered dishes by customer called "Arjun Mehta" in the last 1 year.
+```sql
+select o.order_item,count(o.order_id) as nooforders
+from orders o 
+join customers c on o.customer_id=c.customer_id
+where c.customer_name='Arjun Mehta'
+ 		and
+	  extract(year from o.order_date)
+	  =(SELECT max(EXTRACT(YEAR FROM order_date))-1
+		FROM orders)
+group by 1
+order by nooforders desc
+limit 5;
+```
