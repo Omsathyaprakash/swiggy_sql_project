@@ -12,3 +12,17 @@ This project demonstrates my SQL problem-solving skills through the analysis of 
 - **Business Problems**: Solving 20 specific business problems using SQL queries.
 
 ![ERD]( https://github.com/Omsathyaprakash/swiggy_sql_project/blob/main/erd.png)
+
+## Database Setup
+```sql
+CREATE DATABASE swiggy_db;
+```
+
+## 1. Dropping Existing Tables
+```sql
+DROP TABLE IF EXISTS deliveries;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS restaurants;
+DROP TABLE IF EXISTS riders;
+
