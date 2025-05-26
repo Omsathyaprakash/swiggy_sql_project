@@ -152,3 +152,130 @@ where o.order_status='Not Fulfilled'
 group by 1,2
 order by orders_not_delivered desc;
 ```
+### 6. Restaurant Revenue Ranking: 
+-- Rank restaurants by their total revenue from the last year, including their name, 
+-- total revenue, and rank within their city.
+
+```sql
+select r.restaurant_name,r.city,sum(total_amount) as revenuegenerated,
+rank() over(partition by r.city
+			order by sum(total_amount) desc ) as rn
+from orders o
+join restaurants r on o.restaurant_id=r.restaurant_id
+where extract(year from o.order_date)
+	  =(SELECT max(EXTRACT(YEAR FROM order_date))-1
+		FROM orders)
+group by 1,2;
+```
+
+### 7. Most Popular Dish by City: 
+-- Identify the most popular dish in each city based on the number of orders.
+
+```sql
+
+select * from
+(select o.order_item,r.city,
+		count(order_id) as nooforders,
+		rank() over(partition by r.city
+					order by count(order_id) desc) as rn
+from orders o
+join restaurants r on o.restaurant_id=r.restaurant_id
+group by 1,2)A
+where rn=1;
+```
+### 8. Customer Churn: 
+-- Find customers who haven’t placed an order in 2024 but did in 2023.
+
+```sql
+
+select * 
+from customers;
+
+select distinct c.customer_id,c.customer_name
+from orders o
+join customers c on o.customer_id=c.customer_id
+where extract(year from order_date)=2023
+	and c.customer_id
+			not in
+	(select distinct c.customer_id
+	from orders o
+	join customers c on o.customer_id=c.customer_id
+	where extract(year from order_date)=2024)
+```
+
+### 9. Cancellation Rate Comparison: 
+-- Calculate and compare the order cancellation rate for each restaurant between the 
+-- current year and the previous year.
+
+```sql
+
+
+with cancelratio23 as
+(
+select o.restaurant_id,count(o.order_id) as totalorders,
+		count(case when d.delivery_id is null then 1 end) as notdelivered
+from orders o
+left join deliveries d on o.order_id=d.order_id
+where extract(year from o.order_date)= 2023
+group  by 1
+),
+cancelratio24 as
+(
+select o.restaurant_id,count(o.order_id) as totalorders,
+		count(case when d.delivery_id is null then 1 end) as notdelivered
+from orders o
+left join deliveries d on o.order_id=d.order_id
+where extract(year from o.order_date)= 2024
+group  by 1
+),
+lastyeardata as
+(
+select restaurant_id,totalorders,notdelivered,
+		round((notdelivered::numeric/totalorders)*100,2) as cancelratio
+from cancelratio23
+),
+currentyeardata as
+(
+select restaurant_id,totalorders,notdelivered,
+		round((notdelivered::numeric/totalorders)*100,2) as cancelratio
+from cancelratio24
+)
+select c.restaurant_id,
+		c.cancelratio,
+		l.cancelratio
+from currentyeardata c
+join lastyeardata l 
+on c.restaurant_id=l.restaurant_id;
+```
+
+### 10. Rider Average Delivery Time: 
+-- Determine each rider's average delivery time.
+
+```sql
+
+
+SELECT
+	o.order_id,
+	o.order_time,
+	d.delivery_time,
+	d.rider_id,
+	d.delivery_time - o.order_time AS time_difference,
+	EXTRACT(
+			EPOCH FROM (
+						d.delivery_time - o.order_time +
+						CASE WHEN d.delivery_time < o.order_time THEN INTERVAL '1 DAY'
+						ELSE INTERVAL '0 DAY' END))/60 AS time_diff_min
+FROM 
+	orders AS o
+JOIN 
+	deliveries AS d
+ON
+	o.order_id = d.delivery_id
+WHERE
+	d.delivery_status = 'Delivered'
+ORDER BY
+time_diff_min ASC;
+
+-- EXTRACT(EPOCH FROM ...)> time interval into a number representing seconds. "Epoch" time format as the number of seconds 
+
+```
