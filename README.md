@@ -98,7 +98,7 @@ where c.customer_name='Arjun Mehta'
 group by 1
 order by nooforders desc
 limit 5;
-
+```
 
 ### 2. Popular Time Slots
 -- Question: Identify the time slots during which the most orders are placed. based on 2-hour intervals.
