@@ -4,9 +4,9 @@ This project demonstrates my SQL problem-solving skills through the analysis of 
 
 ## Project Structure
 
- **Database Setup**: Creation of the `swiggy_db` database and the required tables.
- **Data Import**: Inserting sample data into the tables.
- **Data Cleaning**: Handling null values and ensuring data integrity.
- **Business Problems**: Solving 20 specific business problems using SQL queries.
+- **Database Setup**: Creation of the `swiggy_db` database and the required tables.
+- **Data Import**: Inserting sample data into the tables.
+- **Data Cleaning**: Handling null values and ensuring data integrity.
+- **Business Problems**: Solving 20 specific business problems using SQL queries.
 
 
